@@ -1,0 +1,22 @@
+To Disable USB Ports:
+You can unload the usb_storage module, which prevents the system from recognizing USB storage devices.
+
+bash
+Copy code
+#!/bin/bash
+
+# Disable USB storage
+echo "Disabling USB storage..."
+sudo modprobe -r usb_storage
+echo "USB storage disabled."
+To Enable USB Ports:
+You can reload the usb_storage module to allow the system to recognize USB devices again.
+
+bash
+Copy code
+#!/bin/bash
+
+# Enable USB storage
+echo "Enabling USB storage..."
+sudo modprobe usb_storage
+echo "USB storage enabled."
