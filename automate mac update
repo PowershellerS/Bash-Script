@@ -1,0 +1,43 @@
+Automate macOS Updates Script
+bash
+Copy code
+#!/bin/bash
+
+# Function to check for updates
+check_updates() {
+    echo "Checking for updates..."
+    updates=$(softwareupdate -l)
+    if [[ "$updates" == *"No new software available."* ]]; then
+        echo "Your Mac is up to date."
+        exit 0
+    else
+        echo "Updates found:"
+        echo "$updates"
+    fi
+}
+
+# Function to install updates
+install_updates() {
+    echo "Installing updates..."
+    sudo softwareupdate -i -a --restart
+    echo "Updates installed. System may restart if necessary."
+}
+
+# Check for updates
+check_updates
+
+# Install updates
+install_updates
+How the script works:
+Check for updates: The script checks if there are updates available using softwareupdate -l. If none are found, it exits.
+Install updates: If updates are available, it installs all available updates using softwareupdate -i -a. The --restart flag ensures the Mac will restart automatically if an update requires a reboot.
+Running the Script:
+Save the script as mac_update.sh.
+Make the script executable by running:
+bash
+Copy code
+chmod +x mac_update.sh
+Run the script:
+bash
+Copy code
+./mac_update.sh
