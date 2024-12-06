@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Define the username to be deleted
+USER_TO_DELETE="username"
+
+# Check if the user exists
+if id "$USER_TO_DELETE" &>/dev/null; then
+    echo "User $USER_TO_DELETE exists. Proceeding with deletion."
+
+    # Deleting the user and their home directory
+    sudo dscl . -delete /Users/"$USER_TO_DELETE"
+    sudo rm -rf /Users/"$USER_TO_DELETE"
+
+    echo "User $USER_TO_DELETE has been deleted from the system."
+else
+    echo "User $USER_TO_DELETE does not exist on this system."
+fi
