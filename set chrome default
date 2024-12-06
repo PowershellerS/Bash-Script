@@ -1,0 +1,31 @@
+Set-ExecutionPolicy Bypass -Scope Process -Force
+# Define the URL to download the file from and the output path
+$url = "https://kolbi.cz/SetDefaultBrowser.zip"
+$output = Join-Path $env:ProgramData "SetDefaultBrowser.zip"
+
+# Download the file
+Invoke-WebRequest -Uri $url -OutFile $output
+
+# Define the extraction path
+$extractPath = Join-Path $env:ProgramData "SetDefaultBrowser"
+
+# Extract the downloaded file
+Expand-Archive -Path $output -DestinationPath $extractPath
+
+# Clean up the downloaded zip file
+Remove-Item -Path $output
+
+# Search for the executable within the extracted folder
+$exePath = Get-ChildItem -Path $output -Filter "SetDefaultBrowser.exe" -Recurse | Select-Object -ExpandProperty FullName
+
+if ($exePath) {
+    # Execute the application with the specified argument
+    $argument = "chrome"
+    
+    # Start the process
+    Start-Process -FilePath $exePath -ArgumentList $argument -Wait
+
+    Write-Host "Chrome successfully made the default browser."
+} else {
+    Write-Host "Error: SetDefaultBrowser.exe not found."
+}
