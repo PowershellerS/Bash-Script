@@ -1,0 +1,5 @@
+#!/bin/bash
+# Replace username with the user that needs to be changed
+UserToChange="username";
+# Script
+dscl . -append /Groups/staff GroupMembership $UserToChange
