@@ -1,0 +1,121 @@
+1. Install mailutils
+First, install mailutils on your system if it's not already installed:
+
+For Debian/Ubuntu systems:
+
+bash
+Copy code
+sudo apt update
+sudo apt install mailutils
+For RHEL/CentOS systems:
+
+bash
+Copy code
+sudo yum install mailx
+2. Configure SMTP Server
+By default, mailutils uses the local sendmail service to send emails. If you want to send emails via an external SMTP server (e.g., Gmail), you need to configure mailutils to use an external SMTP server.
+
+For sending emails via Gmail's SMTP server, configure the /etc/mail.rc file with the following:
+
+bash
+Copy code
+sudo nano /etc/mail.rc
+Add these lines to configure Gmail's SMTP:
+
+bash
+Copy code
+set smtp="smtp://smtp.gmail.com:587"
+set smtp-auth=login
+set smtp-auth-user=YOUR_EMAIL
+set smtp-auth-password=YOUR_APP_PASSWORD
+set ssl-verify=ignore
+set nss-config-dir=/etc/pki/nssdb/
+Note: Gmail requires an App Password for third-party apps like mailutils. You must generate an App Password from your Google account:
+
+Go to your Google Account Security.
+Enable 2-Step Verification.
+Under "Signing in to Google," select App passwords and generate a password for "Mail."
+3. Modify the Bash Script to Send Email
+Modify the send_notification function in the script to send an email to sagbeyemi@gmail.com using the mail command.
+
+Here's the updated script section:
+
+bash
+Copy code
+# Notification function to send email
+send_notification() {
+    local message=$1
+    local subject="System Alert: High Usage Detected"
+    echo "$message" | mail -s "$subject" YOUR_EMAIL
+    echo "Notification sent to YOUR_EMAIL"
+}
+4. Complete Bash Script
+Here's the complete Bash script with the email notification configured:
+
+bash
+Copy code
+#!/bin/bash
+
+# Thresholds
+CPU_THRESHOLD=SET
+MEMORY_THRESHOLD=SET
+DISK_THRESHOLD=SET
+
+# Log file
+LOG_FILE="/var/log/system_metrics.log"
+
+# Notification function to send email
+send_notification() {
+    local message=$1
+    local subject="System Alert: High Usage Detected"
+    echo "$message" | mail -s "$subject" YOUR_EMAIL
+    echo "Notification sent to YOUR_EMAIL"
+}
+
+# Function to check CPU usage
+check_cpu() {
+    cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}')
+    echo "CPU Usage: $cpu_usage%" >> $LOG_FILE
+
+    if (( $(echo "$cpu_usage > $CPU_THRESHOLD" | bc -l) )); then
+        send_notification "CPU usage is above threshold: $cpu_usage%"
+    fi
+}
+
+# Function to check memory usage
+check_memory() {
+    memory_usage=$(free | awk '/Mem:/ {printf("%.2f"), $3/$2 * 100}')
+    echo "Memory Usage: $memory_usage%" >> $LOG_FILE
+
+    if (( $(echo "$memory_usage > $MEMORY_THRESHOLD" | bc -l) )); then
+        send_notification "Memory usage is above threshold: $memory_usage%"
+    fi
+}
+
+# Function to check disk usage
+check_disk() {
+    disk_usage=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
+    echo "Disk Usage: $disk_usage%" >> $LOG_FILE
+
+    if (( disk_usage > DISK_THRESHOLD )); then
+        send_notification "Disk usage is above threshold: $disk_usage%"
+    fi
+}
+
+# Log current date and time
+echo "---- $(date) ----" >> $LOG_FILE
+
+# Run checks
+check_cpu
+check_memory
+check_disk
+5. Test the Script
+Save the script and make it executable:
+bash
+Copy code
+chmod +x system_metrics.sh
+Run the script manually to test:
+bash
+Copy code
+./system_metrics.sh
+If everything is configured correctly, you will receive an email alert at YOUR_EMAIL if the system metrics exceed the defined thresholds.
