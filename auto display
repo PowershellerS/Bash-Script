@@ -1,0 +1,25 @@
+Note: This might not work on PI 5 and 4 but on Pi Zero 2 W model.
+
+nano autorun_video.sh - Create a shell script (let's name it autorun_video.sh) using a text editor like Nano or Vim.
+
+The content of the the bash script should be
+
+#!/bin/bash
+
+/usr/bin/vlc --fullscreen -- loop /path/to/your/video.mp4
+
+Note: The Launch VLC with the video in fullscreen mode and loops it.
+
+chmod +x autorun_video.sh
+
+Note: The makes the shell script readable and accessible
+
+sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
+
+Note: edit autostart and put below script to autostart the video on boot.
+
+@/path/to/autorun_video.sh
+
+This command above auto start the video from the path where the shell is created.
+
+reboot
